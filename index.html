@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balanço de 25 Séculos de Antropologia | J. F. Sellés</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Lora:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Lora', serif; }
+        html { scroll-behavior: smooth; }
+        .active-tab { 
+            border-color: #CC5500; 
+            color: #CC5500;
+            font-weight: 500;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+                max-height: 500px;
+            }
+        }
+        .gemini-button {
+            background: linear-gradient(45deg, #004D40, #00796B);
+            transition: all 0.3s ease;
+        }
+        .gemini-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loader {
+            border: 4px solid rgba(0,0,0,0.1);
+            border-left-color: #CC5500;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#FDFBF7] text-[#333333]">
+
+    <header class="bg-[#FDFBF7]/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-[#004D40]">Antropologia Filosófica</h1>
+            <div class="hidden md:flex space-x-6 text-sm">
+                <a href="#modelo-dual" class="text-gray-600 hover:text-[#CC5500]">O Modelo Dual</a>
+                <a href="#proposta-triadica" class="text-gray-600 hover:text-[#CC5500]">A Proposta Triádica</a>
+                <a href="#simulador-dialogo" class="text-gray-600 hover:text-[#CC5500]">Simulador de Diálogo</a>
+                <a href="#perguntas-ia" class="text-gray-600 hover:text-[#CC5500]">Perguntas à IA</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-12">
+        
+        <section id="hero" class="text-center py-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#004D40]">Balanço de 25 Séculos de Antropologia</h1>
+            <p class="text-lg text-gray-700 mt-4 max-w-3xl mx-auto">Uma exploração interativa do artigo de <span class="font-semibold">Juan Fernando Sellés</span>, que questiona o modelo dualista tradicional e propõe uma visão triádica do ser humano.</p>
+        </section>
+
+        <section id="modelo-dual" class="py-16">
+            <h2 class="text-3xl font-bold text-center text-[#004D40]">O Modelo Dominante: A Visão Dual</h2>
+            <p class="mt-4 text-center max-w-3xl mx-auto text-gray-600">
+                Ao longo de 25 séculos, a filosofia ocidental tendeu a compreender o ser humano como um composto de alma e corpo. Selecione um período para explorar os seus pensadores e ideias chave.
+            </p>
+            <div class="mt-12">
+                <div class="border-b border-gray-300 flex justify-center space-x-4 md:space-x-8">
+                    <button class="tab-button text-sm md:text-base py-2 px-4 border-b-2 border-transparent active-tab" onclick="showTab('classica')">Clássica</button>
+                    <button class="tab-button text-sm md:text-base py-2 px-4 border-b-2 border-transparent" onclick="showTab('medieval')">Medieval</button>
+                    <button class="tab-button text-sm md:text-base py-2 px-4 border-b-2 border-transparent" onclick="showTab('moderna')">Moderna</button>
+                    <button class="tab-button text-sm md:text-base py-2 px-4 border-b-2 border-transparent" onclick="showTab('contemporanea')">Contemporânea</button>
+                </div>
+                <div id="tab-content" class="mt-8 p-6 bg-white rounded-lg shadow-md transition-opacity duration-500">
+                </div>
+            </div>
+        </section>
+        
+        <section id="peca-ausente" class="py-16 bg-white rounded-lg my-16">
+             <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-[#004D40]">A Peça Ausente: A 'Pessoa'</h2>
+                <p class="mt-4 text-gray-600">
+                    O autor argumenta que, apesar de séculos de debate, a dimensão mais fundamental do ser humano — a 'pessoa' como núcleo irredutível e ato de ser — foi largamente negligenciada. Esta não é a soma das partes (corpo e alma), mas o próprio ato que as sustenta e lhes confere uma singularidade única.
+                </p>
+            </div>
+        </section>
+
+        <section id="proposta-triadica" class="py-16">
+            <h2 class="text-3xl font-bold text-center text-[#004D40]">A Proposta Triádica</h2>
+             <p class="mt-4 text-center max-w-3xl mx-auto text-gray-600">
+                Para superar as limitações do modelo dual, Sellés (baseado em Polo) propõe uma estrutura tripartida. Este modelo não anula a dualidade alma-corpo, mas a enquadra numa realidade superior: o espírito ou pessoa. Clique em cada componente para entender a sua função.
+            </p>
+            <div class="mt-12 grid md:grid-cols-3 gap-8 items-start">
+                <div class="col-span-3 md:col-span-1 flex flex-col items-center space-y-4">
+                    <button class="diagram-part p-4 w-full text-center bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow" data-content="espirito"><h3 class="text-xl font-semibold text-[#004D40]">Espírito / Pessoa</h3><p class="text-sm text-gray-500">'Vida Íntima / Pessoal'</p></button>
+                    <div class="text-2xl text-gray-400">▼</div>
+                    <button class="diagram-part p-4 w-full text-center bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow" data-content="alma"><h3 class="text-xl font-semibold text-[#004D40]">Alma / Essência</h3><p class="text-sm text-gray-500">'Vida Adicionada'</p></button>
+                    <div class="text-2xl text-gray-400">▼</div>
+                    <button class="diagram-part p-4 w-full text-center bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow" data-content="corpo"><h3 class="text-xl font-semibold text-[#004D40]">Corpo / Natureza</h3><p class="text-sm text-gray-500">'Vida Recebida'</p></button>
+                </div>
+                <div class="col-span-3 md:col-span-2 p-6 bg-white rounded-lg shadow-md min-h-[300px]">
+                    <div id="diagram-content" class="transition-opacity duration-500">
+                        <h3 class="font-bold text-lg text-gray-700">Selecione um componente</h3>
+                        <p class="mt-2 text-gray-600">Clique num dos elementos à esquerda para ver a descrição.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="comparacao" class="py-16">
+            <h2 class="text-3xl font-bold text-center text-[#004D40]">Comparando os Modelos</h2>
+             <p class="mt-4 text-center max-w-3xl mx-auto text-gray-600">
+                Como os modelos dual e triádico se comparam? O gráfico de radar abaixo visualiza as forças conceituais de cada modelo com base nas teses do artigo.
+            </p>
+            <div class="mt-12 chart-container">
+                <canvas id="comparisonChart"></canvas>
+            </div>
+        </section>
+        
+        <section id="implicacoes" class="py-16 bg-gray-50 rounded-lg my-16">
+             <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-center text-[#004D40]">Implicações e Avanço</h2>
+                <p class="mt-4 text-gray-600">
+                    A adoção de um modelo triádico abre caminho para novas abordagens. Veja como esta visão se aplica a situações práticas.
+                </p>
+                <div class="mt-8 flex justify-center">
+                     <button id="generate-scenarios-btn" class="gemini-button text-white font-bold py-3 px-6 rounded-lg shadow-md">
+                        ✨ Gerar Cenários Práticos
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- NOVA SEÇÃO: SIMULADOR DE DIÁLOGO -->
+        <section id="simulador-dialogo" class="py-16">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-[#004D40]">Simulador de Diálogo Filosófico</h2>
+                <p class="mt-4 text-gray-600 max-w-3xl mx-auto">
+                    E se os grandes pensadores pudessem debater as suas ideias cara a cara? Escolha dois filósofos, um tema, e deixe a IA gerar um diálogo hipotético, mas fundamentado nas suas doutrinas.
+                </p>
+                <div class="mt-8 p-6 bg-white rounded-lg shadow-md flex flex-col md:flex-row flex-wrap gap-4 items-center justify-center">
+                    <select id="philosopher1" class="p-2 border border-gray-300 rounded-lg w-full md:w-auto focus:ring-2 focus:ring-[#CC5500] focus:outline-none">
+                        <option>Platão</option>
+                        <option>Aristóteles</option>
+                        <option>Santo Agostinho</option>
+                        <option>Tomás de Aquino</option>
+                        <option>Descartes</option>
+                        <option selected>J.F. Sellés (Modelo Triádico)</option>
+                    </select>
+                    <span class="font-bold text-gray-600">vs</span>
+                    <select id="philosopher2" class="p-2 border border-gray-300 rounded-lg w-full md:w-auto focus:ring-2 focus:ring-[#CC5500] focus:outline-none">
+                        <option>Platão</option>
+                        <option selected>Aristóteles</option>
+                        <option>Santo Agostinho</option>
+                        <option>Tomás de Aquino</option>
+                        <option>Descartes</option>
+                        <option>J.F. Sellés (Modelo Triádico)</option>
+                    </select>
+                    <select id="dialogue-topic" class="p-2 border border-gray-300 rounded-lg w-full md:w-auto focus:ring-2 focus:ring-[#CC5500] focus:outline-none">
+                        <option>A relação corpo-alma</option>
+                        <option>O propósito da vida humana</option>
+                        <option>A fonte do conhecimento</option>
+                    </select>
+                    <button id="simulate-dialogue-btn" class="gemini-button text-white font-bold py-2 px-6 rounded-lg shadow-md w-full md:w-auto">
+                        ✨ Simular Diálogo
+                    </button>
+                </div>
+                <div id="dialogue-output" class="mt-8 p-6 bg-gray-50 rounded-lg text-left min-h-[150px] border border-gray-200">
+                   <p class="text-gray-500">O diálogo gerado aparecerá aqui...</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="perguntas-ia" class="py-16 bg-white rounded-lg my-16">
+            <div class="max-w-3xl mx-auto text-center">
+                <h2 class="text-3xl font-bold text-[#004D40]">Perguntas Filosóficas à IA</h2>
+                <p class="mt-4 text-gray-600">
+                    Tem alguma dúvida? Gostaria de aprofundar algum conceito? Pergunte à nossa IA treinada nos conceitos do artigo.
+                </p>
+                <div class="mt-8">
+                    <textarea id="user-question" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#CC5500] focus:outline-none" rows="4" placeholder="Ex: Qual a principal diferença entre a 'alma' no modelo dual e a 'alma' no modelo triádico?"></textarea>
+                    <button id="ask-gemini-btn" class="mt-4 gemini-button text-white font-bold py-3 px-6 rounded-lg shadow-md">
+                        ✨ Perguntar à IA
+                    </button>
+                </div>
+                <div id="gemini-response-dialogue" class="mt-8 p-6 bg-gray-50 rounded-lg text-left min-h-[100px] border border-gray-200">
+                   <p class="text-gray-500">A sua resposta aparecerá aqui...</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white text-center py-6">
+        <p>Aplicação interativa baseada no artigo "Balance de 25 Siglos de Antropología y Propuesta para Avanzar" de Juan Fernando Sellés.</p>
+        <p class="text-sm text-gray-400 mt-2">Funcionalidades de IA com a tecnologia Gemini. Desenvolvido como uma ferramenta de visualização de conceitos filosóficos.</p>
+    </footer>
+
+    <div id="gemini-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-[#004D40]">✨ Análise Gerada por IA</h3>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-red-600 text-2xl">&times;</button>
+            </div>
+            <div id="modal-content" class="p-6 overflow-y-auto"></div>
+        </div>
+    </div>
+
+
+    <script>
+        const tabData = {
+            classica: { title: 'Período Clássico Grego', content: `Nesta fase, a alma ganha proeminência. <strong>Sócrates</strong> a considerava divina e imortal. <strong>Platão</strong> radicalizou a visão, descrevendo o corpo como uma 'prisão' para a alma. <strong>Aristóteles</strong>, por sua vez, propôs uma união substancial e introduziu o conceito crucial do 'intelecto agente' como a dimensão mais nobre, imortal e 'vinda de fora'.` },
+            medieval: { title: 'Período Medieval', content: `O pensamento medieval aprofundou o estudo da alma, buscando um equilíbrio entre razão e vontade. <strong>Santo Agostinho</strong>, com forte influência platónica, via o homem como uma alma que se serve de um corpo. No século XIII, <strong>Tomás de Aquino</strong> e <strong>Alberto Magno</strong> defenderam a alma como 'forma substancial' do corpo, mantendo a superioridade do intelecto agente sobre as outras potências.` },
+            moderna: { title: 'Período Moderno', content: `A modernidade rompeu o equilíbrio medieval, gerando uma forte oposição entre voluntarismo e racionalismo. <strong>Descartes</strong> estabeleceu um dualismo radical entre 'res cogitans' (alma/mente) e 'res extensa' (corpo). Pensadores como <strong>Kant</strong> deram primazia à vontade livre, enquanto outros como <strong>Hegel</strong> focaram na razão. Crucialmente, o conceito de intelecto agente foi, em grande parte, esquecido.` },
+            contemporanea: { title: 'Período Contemporâneo', content: `A filosofia contemporânea continuou a oscilação entre voluntarismo (Nietzsche, Heidegger) e outras correntes. Surgiram os 'personalismos' (Mounier, Marcel), que deram nova atenção à 'pessoa'. No entanto, segundo Sellés, muitos desses movimentos adotaram uma visão 'totalizante', vendo a pessoa como a soma das suas partes, em vez de um ato superior e distinto.` }
+        };
+
+        const diagramData = {
+            espirito: { title: 'Espírito / Pessoa / Vida Íntima', content: 'Esta é a dimensão superior e nativamente ativa. Corresponde ao ‘ato de ser’ pessoal, a novidade irredutível que cada um é. Não é algo que se ‘tem’, mas o que se ‘é’. É a raiz da liberdade, da abertura ao transcendente e da intimidade. É o que Polo descreve como \'vida pessoal ou transcendental\'.' },
+            alma: { title: 'Alma / Essência / Vida Adicionada', content: 'Esta é a dimensão imaterial intermédia. Corresponde à ‘essência’ do homem, compreendendo as suas potências superiores como a inteligência e a vontade. É onde se desenvolvem os hábitos (conhecimento) e as virtudes (amor), formando o ‘eu’ ou a personalidade. Polo a denomina ‘vida adicionada’, pois é cultivada ao longo da existência.' },
+            corpo: { title: 'Corpo / Natureza / Vida Recebida', content: 'Esta é a dimensão corpórea, a base material do ser humano. Inclui as funções biológicas, os sentidos e os apetites. Polo a designa como ‘vida recebida’, pois corresponde à herança biológica que recebemos dos nossos pais. É a dimensão potencial que é vivificada e elevada pela alma.' }
+        };
+
+        function showTab(tabName) {
+            const contentDiv = document.getElementById('tab-content');
+            contentDiv.style.opacity = 0;
+            setTimeout(() => {
+                contentDiv.innerHTML = `<h3 class="text-xl font-bold text-[#004D40]">${tabData[tabName].title}</h3><p class="mt-2 text-gray-700">${tabData[tabName].content}</p>`;
+                contentDiv.style.opacity = 1;
+            }, 300);
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active-tab'));
+            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active-tab');
+        }
+        
+        const modal = document.getElementById('gemini-modal');
+        const modalContent = document.getElementById('modal-content');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const showModal = () => modal.classList.remove('hidden');
+        const hideModal = () => modal.classList.add('hidden');
+        closeModalBtn.addEventListener('click', hideModal);
+
+        const showLoader = (container) => {
+            container.innerHTML = '<div class="flex justify-center items-center p-8"><div class="loader"></div></div>';
+        }
+
+        async function callGemini(prompt) {
+            const apiKey = ""; // Chave de API não necessária no ambiente Canvas
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ role: "user", parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.7, topP: 0.95 }
+            };
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+                const result = await response.json();
+                if (result.candidates?.[0]?.content?.parts?.[0]) {
+                    return result.candidates[0].content.parts[0].text;
+                } else {
+                    return "Não foi possível gerar uma resposta. A estrutura da resposta da API era inesperada.";
+                }
+            } catch (error) {
+                console.error("Erro ao chamar a API Gemini:", error);
+                return `Ocorreu um erro: ${error.message}. Por favor, verifique a consola para mais detalhes.`;
+            }
+        }
+
+        // --- FUNCIONALIDADES DA IA ---
+
+        // 1. Gerar Cenários Práticos
+        const generateScenariosBtn = document.getElementById('generate-scenarios-btn');
+        generateScenariosBtn.addEventListener('click', async () => {
+            showModal();
+            showLoader(modalContent);
+            const prompt = `Aja como um professor de filosofia. Com base na distinção fundamental entre o modelo antropológico dual (corpo e alma) e o modelo triádico (corpo, alma e pessoa/espírito), onde a 'pessoa' é o ato de ser irredutível e a fonte da liberdade, gere 3 cenários práticos e comparativos do dia a dia. Para cada cenário, descreva brevemente como uma visão dualista e uma visão triádica interpretariam ou agiriam. Use o formato: **Cenário X: [Título]**\n* **Visão Dualista:** [Descrição]\n* **Visão Triádica:** [Descrição]`;
+            const response = await callGemini(prompt);
+            modalContent.innerHTML = response.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\* (.*?):/g, '<br><strong>$1:</strong>');
+        });
+
+        // 2. Simulador de Diálogo Filosófico
+        const simulateDialogueBtn = document.getElementById('simulate-dialogue-btn');
+        const dialogueOutput = document.getElementById('dialogue-output');
+        simulateDialogueBtn.addEventListener('click', async () => {
+            const philosopher1 = document.getElementById('philosopher1').value;
+            const philosopher2 = document.getElementById('philosopher2').value;
+            const topic = document.getElementById('dialogue-topic').value;
+
+            if (philosopher1 === philosopher2) {
+                dialogueOutput.innerHTML = '<p class="text-red-500">Por favor, escolha dois filósofos diferentes.</p>';
+                return;
+            }
+            showLoader(dialogueOutput);
+            const prompt = `
+                Aja como um historiador da filosofia e dramaturgo. Crie um diálogo filosófico curto, mas profundo e verossímil, entre ${philosopher1} e ${philosopher2} sobre o tema "${topic}".
+                Instruções:
+                1. Fidelidade: A posição de cada filósofo deve refletir com precisão as suas doutrinas conhecidas. Se um dos filósofos for 'J.F. Sellés (Modelo Triádico)', represente a sua visão de que o ser humano é corpo, alma e pessoa (ato de ser), criticando a redução dualista. Para os outros (Platão, Aristóteles, Santo Agostinho, Tomás de Aquino, Descartes), use o seu pensamento antropológico clássico.
+                2. Formato: Use o formato "Nome do Filósofo: [fala]".
+                3. Dinâmica: Crie um verdadeiro debate, onde um responde ao outro.
+                4. Tom: O tom deve ser sério e acadêmico, mas acessível.
+                5. Conciso: O diálogo deve ter entre 4 a 6 trocas de falas.`;
+            const response = await callGemini(prompt);
+            const formattedResponse = response.replace(/\n/g, '<br>').replace(/(\w+\s?\w*\s?\(?[\w\s]*\)?):/g, '<br><br><strong>$1</strong>');
+            dialogueOutput.innerHTML = `<p>${formattedResponse.trim()}</p>`;
+        });
+
+        // 3. Perguntas Filosóficas à IA
+        const askGeminiBtn = document.getElementById('ask-gemini-btn');
+        const geminiResponseDialogue = document.getElementById('gemini-response-dialogue');
+        askGeminiBtn.addEventListener('click', async () => {
+            const question = document.getElementById('user-question').value;
+            if (!question.trim()) {
+                geminiResponseDialogue.innerHTML = '<p class="text-red-500">Por favor, insira uma pergunta.</p>';
+                return;
+            }
+            showLoader(geminiResponseDialogue);
+            const prompt = `
+                Você é um assistente de filosofia especializado na antropologia de Juan Fernando Sellés e Leonardo Polo. Um usuário está a explorar uma página sobre a diferença entre o modelo dual (corpo-alma) e o modelo triádico (corpo-alma-pessoa). O usuário fez a seguinte pergunta: "${question}"
+                Contexto chave: O modelo triádico propõe que, superior ao corpo e à alma, está a 'pessoa' (espírito), que é o 'ato de ser' irredutível, fonte de liberdade e intimidade. O erro histórico foi esquecer ou confundir 'pessoa' com 'alma'.
+                Responda à pergunta do usuário de forma clara, concisa e pedagógica, utilizando este contexto. Mantenha um tom acessível.`;
+            const response = await callGemini(prompt);
+            geminiResponseDialogue.innerHTML = `<p>${response.replace(/\n/g, '<br>')}</p>`;
+        });
+
+
+        // --- LÓGICA ORIGINAL DA PÁGINA ---
+        document.addEventListener('DOMContentLoaded', () => {
+            showTab('classica'); 
+            
+            document.querySelectorAll('.diagram-part').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const contentKey = e.currentTarget.dataset.content;
+                    const contentDiv = document.getElementById('diagram-content');
+                    contentDiv.style.opacity = 0;
+                    setTimeout(() => {
+                        contentDiv.innerHTML = `<h3 class="font-bold text-lg text-gray-700">${diagramData[contentKey].title}</h3><p class="mt-2 text-gray-600">${diagramData[contentKey].content}</p>`;
+                        contentDiv.style.opacity = 1;
+                    }, 300);
+                });
+            });
+
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Plenitude Explicativa', 'Visão da Singularidade', 'Foco na Pessoa', 'Abertura ao Transcendente', 'Fundamento da Liberdade', 'Equilíbrio Interno'],
+                    datasets: [{
+                        label: 'Modelo Dual', data: [5, 3, 4, 4, 6, 5],
+                        backgroundColor: 'rgba(204, 85, 0, 0.2)', borderColor: 'rgba(204, 85, 0, 1)', borderWidth: 2
+                    }, {
+                        label: 'Modelo Triádico', data: [8, 9, 9, 9, 8, 8],
+                        backgroundColor: 'rgba(0, 77, 64, 0.2)', borderColor: 'rgba(0, 77, 64, 1)', borderWidth: 2
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: { r: { angleLines: { color: 'rgba(0, 0, 0, 0.1)' }, grid: { color: 'rgba(0, 0, 0, 0.1)' }, pointLabels: { font: { size: 12, family: "'Inter', sans-serif" }, color: '#333333' }, ticks: { beginAtZero: true, max: 10, stepSize: 2, backdropColor: 'rgba(253, 251, 247, 0.75)' } } },
+                    plugins: { legend: { position: 'top' } }
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
