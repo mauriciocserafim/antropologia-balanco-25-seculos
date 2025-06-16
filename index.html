@@ -259,10 +259,16 @@
             container.innerHTML = '<div class="flex justify-center items-center p-8"><div class="loader"></div></div>';
         }
 
-        // --- FUNÇÃO DE CHAMADA DA API GEMINI (ROBUSTA) ---
+        // --- FUNÇÃO DE CHAMADA DA API GEMINI (ROBUSTA E CORRIGIDA) ---
         async function callGemini(prompt) {
             const apiKey = ""; // A chave não é necessária no ambiente Canvas
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            // CORREÇÃO: A URL foi ajustada para lidar com o erro "Method doesn't allow unregistered callers".
+            // Esta abordagem remove o parâmetro "?key=" quando a chave está vazia, permitindo que o
+            // ambiente do Canvas injete a autenticação necessária corretamente.
+            const model = 'gemini-2.0-flash';
+            const baseUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+            const apiUrl = apiKey ? `${baseUrl}?key=${apiKey}` : baseUrl;
             
             const payload = {
                 contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -281,36 +287,29 @@
 
                 const result = await response.json();
 
-                // Lida com erros da API primeiro (ex: má formatação do pedido, chave inválida)
                 if (!response.ok) {
                     const errorMessage = result?.error?.message || `Erro na API: ${response.statusText}`;
                     throw new Error(errorMessage);
                 }
 
-                // Lida com casos em que a resposta é OK, mas o conteúdo pode estar em falta ou bloqueado
                 if (result.candidates && result.candidates.length > 0) {
                     const candidate = result.candidates[0];
-                    // Verifica se a geração de conteúdo foi parada por uma razão que não a conclusão normal
                     if (candidate.finishReason && candidate.finishReason !== 'STOP') {
                          return `A geração de conteúdo foi interrompida. Motivo: ${candidate.finishReason}.`;
                     }
-                    // Verifica se existem partes de conteúdo para devolver
                     if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0) {
                         return candidate.content.parts[0].text;
                     }
                 }
                 
-                // Lida com o feedback do prompt se indicar bloqueio
                 if (result.promptFeedback?.blockReason) {
                     return `A sua solicitação foi bloqueada. Motivo: ${result.promptFeedback.blockReason}.`;
                 }
 
-                // Fallback para uma estrutura de resposta bem-sucedida inesperada
                 return "Não foi possível gerar uma resposta. A API retornou uma resposta inesperada ou vazia.";
 
             } catch (error) {
                 console.error("Erro detalhado ao chamar a API Gemini:", error);
-                // Devolve uma mensagem de erro fácil de usar, incluindo o erro específico
                 return `<p class="text-red-500">Ocorreu um erro: ${error.message}</p>`;
             }
         }
