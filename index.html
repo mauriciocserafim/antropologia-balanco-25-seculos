@@ -259,14 +259,19 @@
             container.innerHTML = '<div class="flex justify-center items-center p-8"><div class="loader"></div></div>';
         }
 
-        // --- FUNÇÃO DE CHAMADA DA API GEMINI (CORRIGIDA) ---
+        // --- FUNÇÃO DE CHAMADA DA API GEMINI (ROBUSTA) ---
         async function callGemini(prompt) {
-            const apiKey = ""; // Chave de API não é necessária no ambiente Canvas
+            const apiKey = ""; // A chave não é necessária no ambiente Canvas
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            
             const payload = {
                 contents: [{ role: "user", parts: [{ text: prompt }] }],
-                generationConfig: { temperature: 0.7, topP: 0.95 }
+                generationConfig: {
+                    temperature: 0.7,
+                    topP: 0.95,
+                }
             };
+
             try {
                 const response = await fetch(apiUrl, {
                     method: 'POST',
@@ -274,32 +279,39 @@
                     body: JSON.stringify(payload)
                 });
 
-                // Se a resposta não for OK, tenta obter uma mensagem de erro mais detalhada
+                const result = await response.json();
+
+                // Lida com erros da API primeiro (ex: má formatação do pedido, chave inválida)
                 if (!response.ok) {
-                    let errorText = `API Error ${response.status}: ${response.statusText}`;
-                    try {
-                        const errorData = await response.json();
-                        // Extrai a mensagem do JSON de erro da API
-                        if (errorData && errorData.error && errorData.error.message) {
-                            errorText = errorData.error.message;
-                        }
-                    } catch (e) {
-                        // O corpo do erro não era JSON, ou não foi possível analisá-lo.
-                        console.error("Não foi possível analisar o JSON da resposta de erro.", e);
+                    const errorMessage = result?.error?.message || `Erro na API: ${response.statusText}`;
+                    throw new Error(errorMessage);
+                }
+
+                // Lida com casos em que a resposta é OK, mas o conteúdo pode estar em falta ou bloqueado
+                if (result.candidates && result.candidates.length > 0) {
+                    const candidate = result.candidates[0];
+                    // Verifica se a geração de conteúdo foi parada por uma razão que não a conclusão normal
+                    if (candidate.finishReason && candidate.finishReason !== 'STOP') {
+                         return `A geração de conteúdo foi interrompida. Motivo: ${candidate.finishReason}.`;
                     }
-                    throw new Error(errorText);
+                    // Verifica se existem partes de conteúdo para devolver
+                    if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0) {
+                        return candidate.content.parts[0].text;
+                    }
                 }
                 
-                const result = await response.json();
-                if (result.candidates?.[0]?.content?.parts?.[0]) {
-                    return result.candidates[0].content.parts[0].text;
-                } else {
-                    return "Não foi possível gerar uma resposta. A estrutura da resposta da API era inesperada.";
+                // Lida com o feedback do prompt se indicar bloqueio
+                if (result.promptFeedback?.blockReason) {
+                    return `A sua solicitação foi bloqueada. Motivo: ${result.promptFeedback.blockReason}.`;
                 }
+
+                // Fallback para uma estrutura de resposta bem-sucedida inesperada
+                return "Não foi possível gerar uma resposta. A API retornou uma resposta inesperada ou vazia.";
+
             } catch (error) {
-                console.error("Erro ao chamar a API Gemini:", error);
-                // Exibe a mensagem de erro mais específica que construímos.
-                return `Ocorreu um erro: ${error.message}. Por favor, verifique a consola para mais detalhes.`;
+                console.error("Erro detalhado ao chamar a API Gemini:", error);
+                // Devolve uma mensagem de erro fácil de usar, incluindo o erro específico
+                return `<p class="text-red-500">Ocorreu um erro: ${error.message}</p>`;
             }
         }
 
@@ -339,7 +351,6 @@
                 5. Conciso: O diálogo deve ter entre 4 a 6 trocas de falas.`;
             const response = await callGemini(prompt);
             
-            // Lógica de formatação corrigida
             let formattedResponse = response.replace(/^([^:]+):/gm, "<strong>$1:</strong>");
             formattedResponse = formattedResponse.replace(/\n/g, "<br><br>");
             dialogueOutput.innerHTML = `<p>${formattedResponse.trim()}</p>`;
