@@ -147,7 +147,7 @@
             </div>
         </section>
 
-        <!-- NOVA SEÇÃO: SIMULADOR DE DIÁLOGO -->
+        <!-- Seção Simulador de Diálogo -->
         <section id="simulador-dialogo" class="py-16">
             <div class="max-w-4xl mx-auto text-center">
                 <h2 class="text-3xl font-bold text-[#004D40]">Simulador de Diálogo Filosófico</h2>
@@ -259,8 +259,9 @@
             container.innerHTML = '<div class="flex justify-center items-center p-8"><div class="loader"></div></div>';
         }
 
+        // --- FUNÇÃO DE CHAMADA DA API GEMINI (CORRIGIDA) ---
         async function callGemini(prompt) {
-            const apiKey = ""; // Chave de API não necessária no ambiente Canvas
+            const apiKey = ""; // Chave de API não é necessária no ambiente Canvas
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
             const payload = {
                 contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -272,7 +273,23 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+
+                // Se a resposta não for OK, tenta obter uma mensagem de erro mais detalhada
+                if (!response.ok) {
+                    let errorText = `API Error ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        // Extrai a mensagem do JSON de erro da API
+                        if (errorData && errorData.error && errorData.error.message) {
+                            errorText = errorData.error.message;
+                        }
+                    } catch (e) {
+                        // O corpo do erro não era JSON, ou não foi possível analisá-lo.
+                        console.error("Não foi possível analisar o JSON da resposta de erro.", e);
+                    }
+                    throw new Error(errorText);
+                }
+                
                 const result = await response.json();
                 if (result.candidates?.[0]?.content?.parts?.[0]) {
                     return result.candidates[0].content.parts[0].text;
@@ -281,9 +298,11 @@
                 }
             } catch (error) {
                 console.error("Erro ao chamar a API Gemini:", error);
+                // Exibe a mensagem de erro mais específica que construímos.
                 return `Ocorreu um erro: ${error.message}. Por favor, verifique a consola para mais detalhes.`;
             }
         }
+
 
         // --- FUNCIONALIDADES DA IA ---
 
@@ -319,7 +338,10 @@
                 4. Tom: O tom deve ser sério e acadêmico, mas acessível.
                 5. Conciso: O diálogo deve ter entre 4 a 6 trocas de falas.`;
             const response = await callGemini(prompt);
-            const formattedResponse = response.replace(/\n/g, '<br>').replace(/(\w+\s?\w*\s?\(?[\w\s]*\)?):/g, '<br><br><strong>$1</strong>');
+            
+            // Lógica de formatação corrigida
+            let formattedResponse = response.replace(/^([^:]+):/gm, "<strong>$1:</strong>");
+            formattedResponse = formattedResponse.replace(/\n/g, "<br><br>");
             dialogueOutput.innerHTML = `<p>${formattedResponse.trim()}</p>`;
         });
 
